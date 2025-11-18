@@ -1,0 +1,299 @@
+/* =========================
+   Global Styles
+========================= */
+* {
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #f4f6f8;
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================
+   Header
+========================= */
+header {
+  background: linear-gradient(90deg, #0078d7, #00b4db);
+  color: white;
+  padding: 1rem 2rem;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+header h1 {
+  margin-bottom: 0.5rem;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin: 0 1rem;
+  font-weight: 500;
+}
+
+nav a:hover,
+nav a.active {
+  text-decoration: underline;
+}
+
+/* =========================
+   Main Section
+========================= */
+main {
+  flex: 1;
+  padding: 2rem;
+}
+
+/* =========================
+   Books Section (Grid)
+========================= */
+#books-section {
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+#books-section h2 {
+  font-size: 1.8rem;
+  color: #111;
+  margin-bottom: 1.5rem;
+}
+
+/* Grid layout for books */
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.8rem;
+  justify-items: center;
+  margin-top: 1.5rem;
+}
+
+/* Book card design */
+.book-card {
+  width: 100%;
+  max-width: 260px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  padding: 15px;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.book-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+
+.book-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.book-card h3 {
+  color: #1e3a8a;
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+
+.book-card p {
+  margin: 4px 0;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+/* Buttons inside book card */
+.book-card button {
+  margin: 6px 4px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Specific button styles */
+.book-card button.delete {
+  background-color: #ef4444;
+  color: white;
+}
+
+.book-card button.update {
+  background-color: #2563eb;
+  color: white;
+}
+
+.book-card button.cart {
+  background-color: #0ea5e9;
+  color: white;
+}
+
+.book-card button:hover {
+  opacity: 0.85;
+  transform: translateY(-2px);
+}
+
+/* =========================
+   Add / Update Form
+========================= */
+.form-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 3rem;
+}
+
+.form-section h2 {
+  color: #0078d7;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  text-align: center;
+}
+
+/* Stylish Form Box */
+.book-form {
+  background: #ffffff;
+  width: 100%;
+  max-width: 450px;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.book-form label {
+  font-weight: 600;
+  color: #333;
+}
+
+.book-form input {
+  padding: 0.7rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.book-form input:focus {
+  border-color: #0078d7;
+  box-shadow: 0 0 5px rgba(0,120,215,0.3);
+}
+
+/* Submit Button */
+.btn {
+  background: linear-gradient(90deg, #0078d7, #00b4db);
+  color: white;
+  font-weight: 600;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  opacity: 0.95;
+}
+
+/* =========================
+   Cart Section
+========================= */
+#cart-section {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+#cart-section h2 {
+  text-align: center;
+  color: #111;
+  margin-bottom: 20px;
+}
+
+/* Cart grid layout */
+.cart-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Individual cart items */
+.cart-item {
+  display: grid;
+  grid-template-columns: 80px 1fr 150px 100px;
+  align-items: center;
+  gap: 15px;
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.cart-img {
+  width: 80px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.cart-details h4 {
+  margin: 0;
+  color: #111;
+}
+
+.cart-details p {
+  margin: 4px 0;
+  color: #444;
+}
+
+.cart-quantity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cart-quantity button {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.cart-summary {
+  text-align: right;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-top: 10px;
+  color: #0078d7;
+}
+
+/* =========================
+   Footer
+========================= */
+footer {
+  text-align: center;
+  background: #222;
+  color: #ddd;
+  padding: 1rem 0;
+  font-size: 0.9rem;
+  margin-top: 2rem;
+}
