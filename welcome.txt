@@ -42,7 +42,7 @@ Open capture file:
 capture.pcap
 
 Wireshark filter:
-http.request.method == "POST"
+http.request.method == "GET"
 
 
 3) XSS PAYLOADS (DVWA)
@@ -216,10 +216,14 @@ Step 3: Login in same window
 Username: admin
 Password: password
 
+DVWA=low
+
 Step 4: Check Session ID again
 
 IF same → Session Fixation vulnerability
 IF changed → secure
+
+Same Before login After login for DVWA=medium/high
 
 
 EXPERIMENT 6: SESSION REUSE AFTER LOGOUT
