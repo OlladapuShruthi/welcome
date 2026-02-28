@@ -172,3 +172,243 @@ Old data will be available.
 
 END OF COMPLETE AWS LAB
 =======================
+AWS COMPLETE LAB REVISION
+S3 + VPC + BASTION + NAT GATEWAY
+================================
+
+
+==============================
+1) AMAZON S3 LAB
+==============================
+
+CREATE BUCKET
+-------------
+AWS Console → S3 → Create bucket
+Name: my-public-bucket-123
+Region: nearest
+Uncheck: Block all public access
+✔ acknowledge warning
+Create bucket
+
+
+UPLOAD FILE
+-----------
+Bucket → Objects → Upload → Add file → Upload
+
+
+MAKE OBJECT PUBLIC
+------------------
+Object → Permissions → ACL → Edit
+Everyone → Read ✔
+Save
+
+
+TEST PUBLIC ACCESS
+------------------
+Copy Object URL → open in browser
+
+
+ENABLE VERSIONING
+-----------------
+Bucket → Properties → Versioning → Enable
+
+Upload: report.pdf
+Upload again (same name)
+
+Result:
+✔ old version preserved
+✔ delete marker created if deleted
+
+
+CROSS REGION REPLICATION (CRR)
+------------------------------
+Create destination bucket (different region)
+Enable versioning on destination bucket
+
+Source bucket → Management → Replications → Create rule
+Rule name: crr-rule
+Apply to all objects
+Destination bucket → select
+Use AWS managed role
+Save
+
+Upload new file → appears in destination bucket
+
+
+STATIC WEBSITE HOSTING
+----------------------
+Upload:
+index.html
+error.html
+
+Bucket → Properties → Static website hosting → Enable
+Index: index.html
+Error: error.html
+
+Permissions → ACL → Everyone Read ✔
+
+Copy website endpoint → open in browser
+
+
+
+==============================
+2) VPC + PUBLIC & PRIVATE LAB
+==============================
+
+CREATE VPC
+----------
+VPC → Create VPC
+Name: Custom-VPC
+CIDR: 10.0.0.0/16
+
+
+CREATE SUBNETS
+--------------
+Public subnet: 10.0.1.0/24
+Private subnet: 10.0.2.0/24
+
+
+CREATE INTERNET GATEWAY
+-----------------------
+Create IGW → Attach to VPC
+
+
+PUBLIC ROUTE TABLE
+------------------
+Route:
+0.0.0.0/0 → Internet Gateway
+Associate with public subnet
+
+
+ENABLE AUTO PUBLIC IP
+---------------------
+Subnet → Edit → Enable auto-assign public IP
+
+
+CREATE SECURITY GROUP
+---------------------
+Inbound:
+SSH 22 → My IP
+HTTP 80
+HTTPS 443
+
+
+LAUNCH EC2
+----------
+Public EC2 → public subnet
+Private EC2 → private subnet
+
+
+TEST
+----
+Public EC2 → internet works
+Private EC2 → no public access
+
+
+
+==============================
+3) VPC USING BASTION SERVER
+==============================
+
+NETWORK DESIGN
+--------------
+VPC: 10.0.0.0/16
+Public subnet: 10.0.1.0/24
+Private subnet: 10.0.2.0/24
+
+
+SECURITY GROUPS
+---------------
+Bastion SG:
+Allow SSH 22 → My IP
+
+Database SG:
+Allow MySQL 3306 → 10.0.1.0/24
+Allow SSH 22 → Bastion private IP
+NO public access
+
+
+LAUNCH INSTANCES
+----------------
+Bastion → public subnet
+Database → private subnet
+
+
+COPY DB KEY TO BASTION
+----------------------
+scp -i bastion.pem dbserver.pem ubuntu@BASTION_PUBLIC_IP:/home/ubuntu/
+
+
+CONNECT TO BASTION
+------------------
+ssh -i bastion.pem ubuntu@BASTION_PUBLIC_IP
+
+ls
+
+
+CONNECT TO PRIVATE SERVER
+-------------------------
+ssh -i dbserver.pem ubuntu@10.0.2.x
+
+
+
+==============================
+4) NAT GATEWAY (PRIVATE INTERNET)
+==============================
+
+CREATE NAT GATEWAY
+------------------
+VPC → NAT Gateway → Create
+Subnet: public subnet
+Allocate Elastic IP
+Create
+
+
+UPDATE PRIVATE ROUTE TABLE
+--------------------------
+Add route:
+0.0.0.0/0 → NAT Gateway
+
+
+TEST INTERNET FROM PRIVATE EC2
+------------------------------
+Connect via bastion
+
+sudo apt update
+
+✔ internet works
+
+
+
+==============================
+WHY WE USE THIS ARCHITECTURE
+==============================
+
+S3:
+- store files
+- backups & recovery
+- static websites
+
+VPC:
+- network isolation
+- public & private layers
+
+Bastion:
+- secure access to private servers
+
+NAT Gateway:
+- internet for private instances
+- blocks inbound access
+
+
+
+==============================
+EXAM MEMORY SHORTCUT
+==============================
+
+Public subnet → Internet Gateway
+Private subnet → NAT Gateway
+Bastion → secure SSH entry
+S3 Versioning → recover deleted files
+CRR → disaster recovery
+
